@@ -50,8 +50,9 @@ class Game:
         self.rounds_per_game = 3
         self.general_pot = 0
         self.sabaac_pot = 0
+        self.side_pots = []
 
-        self.betting = bet(self)
+        self.betting = bet.Betting(self)
 
         self.phase = self.SETUP_PHASE
 
@@ -174,6 +175,10 @@ class Game:
  
     def start_betting_phase(self):
         self.phase = self.BETTING_PHASE
+
+        self.betting = bet.Betting(self)
+
+        self.betting.next_betting_turn()
 
         #placeholder until betting is added
         self.finish_betting_phase()
@@ -370,18 +375,16 @@ class Game:
                 self.display_die2 = self.die2
                 self.finish_dice_roll()
                          
-        if (self.phase == self.TURN_PHASE 
+        if (self.phase in (self.TURN_PHASE, self.self.BETTING_PHASE)
             and self.current_player.is_ai
             and self.ai_turn_start is not None
         ):                        
             if current_time - self.ai_turn_start >= self.ai_turn_delay:
                 self.ai_turn_start = None
                 self.ai_take_turn()
+            else:
+                pass
 
-    """def end_game(self):
-        self.resolve_dealer_phase()
-        if self.rounds_played >= self.rounds_per_game:
-            self.end_game()"""
 
     @property
     def dealer(self):

@@ -1,114 +1,157 @@
-import game
-import player
-from player_actions import fold
-
+import settings as stt
+import random
 
 class Betting:
-    def __init__(self, game, player):
+    def __init__(self, game):
         self.game = game
-        self.player = player
         self.current_bet = 0
-        self.selected_bet = 0
         self.player_bets={
-            player: 0 
+            player: 0
             for player in self.game.players
         }
-        self.betting_index = 0
-        self.raise_count = 0
+        self.all_in_players=[]
+        self.last_raiser = None
+        self.number_of_raises = 0
+
         self.players_acted = set()
 
-        #possible_actions = {"Check", "Call", "Raise", "Fold", "All In"  } #Fold is also called Junk
-
-    def action_call(self):
-        player = self.game.current_player
-
-        amount_to_call = (self.current_bet - self.player_bets[player])       
-
-        if not self.game.pay(player, amount_to_call):
-            return "NOT_ENOUGH_CREDITS" #invalid Action 
-
-        self.player_bets[player] = self.current_bet
-
-        self.game.next_betting_player()
-
-
     @property
-    def change_action_text(self):
-        if self.current_bet == 0:
-            return "Check"
-        return "Call"
-    
-    def no_change(self):
-        if self.current_bet == 0:
-            return self.check()
-        else:
-            return self.action_call()
+    def active_players(self):
+        return self.game.active_players
+    @property
+    def current_player(self):
+        return self.game.current_player
 
-    def set_button_text(self):
-        if self.current_bet == 0:
-            return"Check"
-        else:
-            return "Call"
+    def next_betting_turn(self):
+        active_unfolded = [p for p in self.active_players
+                         if p not in self.all_in_players]
+
+        if len(active_unfolded) <= 1 or set(active_unfolded) <= self.players_acted:
+            self.finish_betting()
+            return
+
+        index = self.game.current_index
+        while True:
+            index = (index + 1) % len(self.game.players)
+            player = self.game.players[index]
+            if not player.folded and player not in self.all_in_players:
+                break
+
+        self.game.current_index = index
+
+        if not self.current_player.is_ai:
+            self.game.current_human_index = self.game.human_players.index(self.current_player)
+            self.game.awaiting_player_action = True
 
     def check(self):
         player = self.game.current_player
-        self.players_acted.add(player)
-        if self.betting_round_complete():
-            return self.end_betting()
-                
-        self.game.next_betting_player()
-        return "SUCCESS"
+        if self.current_bet >0:
+            return False
 
-    
-    def action_raise(self, new_bet):
-        if self.raise_count >= 3:
-            return "RAISE_LIMIT"
         
-        player = self.game.current_player
-        amount_to_add = new_bet - self.player_bets[player]
-
-        if not self.game.pay(player, amount_to_add):
-            return "NOT_ENOUGH_CREDITS" #invalid Action
-
-        self.player_bets[player] += amount_to_add
-        self.current_bet = new_bet
-        if len(self.game.active_players) == 2:
-            self.raise_count = 0
-        self.raise_count += 1
-
-        self.players_acted = {player}  
-
-        self.next_betting_player()
-
-    def junk(self):
-        return fold(self.game)    
-
-    def all_in(self, player):
-        player = self.game.current_player
-        amount = player.credits
-        player.credits = 0
-        self.player_bets[player] += amount
-        if self.player_bets[player] > self.current_bet:
-            self.current_bet = self.player_bets[player] 
-
-        self.next_betting_player()
-
-    def next_betting_player(self):
-        active_players = self.game.active_players
-        if not active_players:
-            return None  # No active players left
-
-        self.betting_index = (self.betting_index + 1) % len(active_players)
-        if self.betting_index >= len(self.game.active_players):
-            self.betting_index = 0
-            self.end_betting()
-            return active_players[self.betting_index]
-
-    def end_betting(self):
-        pass
-
-    def betting_round_complete(self):
-        for player in self.game.active_players:
-            if self.player_bets[player] < self.current_bet:
-                return False
+        self.players_acted.add(player)
+        self.next_betting_turn()
         return True
+            
+    def can_call(self):
+        player = self.game.current_player
+        amount_to_call = (self.current_bet - self.player_bets[player])
+        return player.credits >= amount_to_call
+
+    def action_call(self):
+        player = self.game.current_player
+        amount_to_call = self.current_bet - self.player_bets[player]
+
+        if amount_to_call >= player.credits:
+            return self.action_all_in()
+
+        if not self.game.pay(player, amount_to_call):
+            return False
+
+        self.player_bets[player] += amount_to_call
+        self.game.general_pot += amount_to_call
+
+        self.players_acted.add(player)
+        self.next_betting_turn()
+        return True
+        
+    def can_raise(self, new_bet):
+        player = self.current_player
+
+        if self.number_of_raises >= stt.NUMBER_OF_RAISES:
+            return False
+        if new_bet <= self.current_bet:
+            return False
+        
+
+        amount_to_pay = new_bet - self.player_bets[player]
+
+        return player.credits >= amount_to_pay
+
+    def action_raise(self, new_bet):
+        player = self.current_player
+        
+        if new_bet <= self.current_bet or self.number_of_raises >= stt.NUMBER_OF_RAISES:
+            return False
+
+        amount_to_pay = new_bet - self.player_bets[player]
+
+        if amount_to_pay >= player.credits:
+            return self.action_all_in()
+
+        if not self.game.pay(player, amount_to_pay):
+            return False
+
+        self.player_bets[player] += amount_to_pay
+        self.game.general_pot += amount_to_pay
+
+        self.current_bet = new_bet
+        self.last_raiser  = player
+        self.number_of_raises += 1
+
+        active_unfolded = [p for p in self.active_players if p not in self.all_in_players]
+        self.players_acted = {player}.intersection(active_unfolded)
+        self.next_betting_turn()
+
+        return True
+
+    def action_all_in(self):
+        player = self.current_player
+        amount = player.credits
+
+        if not self.game.pay(player, amount):
+            return False
+
+        self.player_bets[player] += amount
+        self.game.general_pot += amount
+        self.all_in_players.append(player)
+
+        if self.player_bets[player] > self.current_bet:
+            self.current_bet = self.player_bets[player]
+            self.last_raiser = player
+
+            active_unfolded = [p for p in self.active_players
+                              if p not in self.all_in_players]
+            self.players_acted = {player}.intersection(active_unfolded)
+        else:
+            self.players_acted.add(player)
+
+        self.next_betting_turn()
+        return True
+
+    def betting_fold(self):
+        player = self.game.current_player
+        player.folded = True
+        folded_cards = player.hand[:]
+        random.shuffle(folded_cards)
+        self.game.discard_pile.extend(folded_cards)
+        player.hand.clear()
+
+        self.players_acted.add(player) 
+        self.next_betting_turn()
+
+        
+    
+    def finish_betting(self):
+        self.game.finish_betting_phase()
+

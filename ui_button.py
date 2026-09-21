@@ -172,6 +172,16 @@ winner_quit_button = Button(
     st.WHITE
 )
 
+betting_check_button = Button(
+    "Check",
+    st.STAND_BUTTON_POSITION[0],
+    st.STAND_BUTTON_POSITION[1],
+    st.BUTTON_WIDTH,
+    st.BUTTON_HEIGHT,
+    st.LIGHT_BLUE,
+    st.BLACK
+)
+
 betting_call_button = Button(
     "Call",
     st.STAND_BUTTON_POSITION[0],
@@ -186,6 +196,16 @@ betting_raise_button = Button(
     "Raise",
     st.DRAW_BUTTON_POSITION[0],
     st.DRAW_BUTTON_POSITION[1],
+    st.BUTTON_WIDTH,
+    st.BUTTON_HEIGHT,
+    st.LIGHT_BLUE,
+    st.BLACK
+)
+
+betting_fold_button = Button(
+    "Fold",
+    st.FOLD_BUTTON_POSITION[0],
+    st.FOLD_BUTTON_POSITION[1],
     st.BUTTON_WIDTH,
     st.BUTTON_HEIGHT,
     st.LIGHT_BLUE,
