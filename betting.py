@@ -1,5 +1,6 @@
 import settings as stt
 import random
+import pygame
 
 class Betting:
     def __init__(self, game):
@@ -31,18 +32,27 @@ class Betting:
             return
 
         index = self.game.current_index
+        start_index = index
         while True:
             index = (index + 1) % len(self.game.players)
             player = self.game.players[index]
             if not player.folded and player not in self.all_in_players:
                 break
 
+            if index == start_index:
+                self.finish_betting()
+                return
+
         self.game.current_index = index
 
         if not self.current_player.is_ai:
             self.game.current_human_index = self.game.human_players.index(self.current_player)
             self.game.awaiting_player_action = True
-
+        else:    
+            self.game.awaiting_player_action = False
+            self.game.ai_turn_start = pygame.time.get_ticks()
+        return
+    
     def check(self):
         player = self.game.current_player
         if self.current_bet >0:
@@ -88,6 +98,12 @@ class Betting:
 
         return player.credits >= amount_to_pay
 
+    def has_reached_max_raises(self):
+        max_allowed_raises = stt.NUMBER_OF_RAISES
+        if self.number_of_raises >= max_allowed_raises:
+            return True
+        return False
+    
     def action_raise(self, new_bet):
         player = self.current_player
         
@@ -110,7 +126,7 @@ class Betting:
         self.number_of_raises += 1
 
         active_unfolded = [p for p in self.active_players if p not in self.all_in_players]
-        self.players_acted = {player}.intersection(active_unfolded)
+        self.players_acted = {player}
         self.next_betting_turn()
 
         return True
@@ -132,7 +148,7 @@ class Betting:
 
             active_unfolded = [p for p in self.active_players
                               if p not in self.all_in_players]
-            self.players_acted = {player}.intersection(active_unfolded)
+            self.players_acted = {player}
         else:
             self.players_acted.add(player)
 

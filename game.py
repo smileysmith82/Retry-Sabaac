@@ -3,22 +3,27 @@ from deck import Deck
 from player import Player
 from player_actions import reveal_cards, stand
 from ai_logic import AIPlayer
-import settings
+import settings as stt
 import random
 import pygame
 import styles as st
 import winning_hands as wh
 import betting as bet
+import dice
+import showdown as show
+
+
 
 class Game:
     SETUP_PHASE = "SETUP"
     TURN_PHASE = "TURN"
     BETTING_PHASE = "BETTING"
     SPIKE_PHASE = "SPIKE"
+    DICE_RESULT_PHASE = "DICE RESULT"
     SHOWDOWN_PHASE = "SHOWDOWN"
     WINNER_PHASE = "WINNER"
     GAME_OVER_PHASE = "GAME OVER"
-    def __init__(self, num_ai_players=settings.NUMBER_OF_AI_PLAYERS, num_human_players=settings.NUMBER_OF_HUMAN_PLAYERS):
+    def __init__(self, num_ai_players=stt.NUMBER_OF_AI_PLAYERS, num_human_players=stt.NUMBER_OF_HUMAN_PLAYERS):
         #setup core game State
         self.num_players = num_ai_players + num_human_players
         self.num_human_players = num_human_players
@@ -27,7 +32,7 @@ class Game:
         self.human_players = []
         self.current_human_index = 0
 
-        self.ai_names = settings.AI_NAMES.copy()
+        self.ai_names = stt.AI_NAMES.copy()
 
         random.shuffle(self.ai_names)
 
@@ -35,7 +40,7 @@ class Game:
 
         self.awaiting_player_action = False
         self.game_over = False
-        self.ai_turn_delay = 750
+        self.ai_turn_delay = 700
         self.ai_turn_start = None
 
         self.dealer_index = random.randrange(self.num_players)
@@ -72,6 +77,8 @@ class Game:
         self.dice_animation_last_change = None
 
         self.menu_open = False
+        self.raise_panel_open = False
+        self.pending_raise_amount = 0
 
         #Full Initial Setup (Same as Dealer Reset)
         self.start_new_game()
@@ -84,7 +91,7 @@ class Game:
                 self.human_players.append(player)
             else:
                 ai_name = self.ai_names.pop()
-                if settings.USE_AI_FULL_NAMES:
+                if stt.USE_AI_FULL_NAMES:
                     name = ai_name["full"]
                 else:
                     name = ai_name["short"]
@@ -99,17 +106,13 @@ class Game:
         self.deck = Deck()
         self.deck.shuffle()
         self.rounds_played = 0
-        self.current_bet = 0
-        self.player_bets = {
-            player: 0
-            for player in self.players
-        }
+        
         self.discard_pile = []
         top_card = self.deck.shuffled_deck.pop()
         self.discard_pile.append(top_card)
 
         self.general_pot = 0
-        ante = settings.GAME_ANTE + settings.SABAAC_ANTE
+        ante = stt.GAME_ANTE + stt.SABAAC_ANTE
 
         for player in self.players:
             if player.is_ai:
@@ -117,18 +120,26 @@ class Game:
             player.folded = False
             player.hand.clear()
             if player.credits >= ante:
-                self.general_pot +=settings.GAME_ANTE
-                self.sabaac_pot +=settings.SABAAC_ANTE
+                self.general_pot +=stt.GAME_ANTE
+                self.sabaac_pot +=stt.SABAAC_ANTE
                 self.pay(player, ante)
             else:
                 player.folded = True
                 print (f"{player} does not have enough credits for this round")
 
-
+        
+        self.change_dealer()
         self.deal_new_hands(hand_size=2)
         self.phase = self.TURN_PHASE
+        self.awaiting_player_action = False
 
-        self.take_turn()
+        player = self.current_player
+
+        if player.is_ai:
+            self.ai_turn_start = pygame.time.get_ticks()
+        else:
+            self.current_human_index = self.human_players.index(player)
+            self.awaiting_player_action = True
 
     def deal_new_hands(self, hand_size=2):
         for player in self.players:
@@ -162,7 +173,6 @@ class Game:
         self.selected_discard = False
         self.awaiting_player_action = False
 
-
         previous_player = self.current_index
 
         self.current_index = (self.current_index + 1) % len(self.players)
@@ -177,11 +187,21 @@ class Game:
         self.phase = self.BETTING_PHASE
 
         self.betting = bet.Betting(self)
+        self.current_index = (self.current_index - 1) % len(self.players)
 
         self.betting.next_betting_turn()
 
-        #placeholder until betting is added
-        self.finish_betting_phase()
+    def player_check(self):
+        return self.betting.check()
+
+    def player_call(self):
+        return self.betting.action_call()
+
+    def player_raise(self, amount):
+        return self.betting.action_raise(amount)
+
+    def player_fold(self):
+        return self.betting.betting_fold()
 
     def finish_betting_phase(self):
         self.phase = self.SPIKE_PHASE
@@ -201,43 +221,9 @@ class Game:
             self.sabaac_pot =0
 
         self.general_pot = 0
-            
-    def resolve_dealer_phase(self):
-        self.start_dice_roll()
-        self.rounds_played+=1     
 
-    def roll_dice(self):
-        if self.start_dice_roll():
-            self.reset_hands()
-
-    def start_dice_roll(self):   
-        self.die1 = random.randint(1,6)
-        self.die2 = random.randint(1,6)
-
-        self.dice_rolling = True
-        self.dice_roll_start = pygame.time.get_ticks()
-        self.dice_animation_last_change = self.dice_roll_start
-
-        self.display_die1 = random.randint(1,6)
-        self.display_die2 = random.randint(1,6)
-                
-
-        print (f"Dealer rolled: {self.die1} and {self.die2}")
-
-    def finish_dice_roll(self):
-        if self.die1 == self.die2:
-            print ("Match! Resetting Hands")
-            self.reset_hands()
-        else:
-            print("No Match")
-
-        if self.rounds_played >= self.rounds_per_game:
-            self.start_showdown()
-            return
-        
-        self.phase = self.TURN_PHASE
-        self.current_index = (self.dealer_index + 1) % len(self.players) 
-        self.take_turn()
+    def resolve_dealer_phase (self):
+        dice.start_dice_roll(self)   
 
     def reset_hands(self):
         for player in self.players:
@@ -272,54 +258,6 @@ class Game:
     def quit_game(self):
         pygame.quit()
         raise SystemExit
-
-    def start_showdown(self):
-        active_indexes = [
-            i for i, player in enumerate(self.players)
-            if not player.folded
-        ]
-
-        folded_indexes = [
-                    i for i, player in enumerate(self.players)
-                    if  player.folded
-                ]
-        
-
-        active_indexes.sort(
-            key=lambda index: (
-                wh.evaluate_hand(self.players[index].hand)
-            ),
-            reverse=True
-        )
-
-        self.showdown_order = active_indexes + folded_indexes
-
-        self.showdown_page = 0
-        self.phase = self.SHOWDOWN_PHASE
-        
-    def next_showdown_page(self):
-        next_page_start = (self.showdown_page + 1) * st.SHOWDOWN_PLAYERS_PER_PAGE
-
-        if next_page_start >= len(self.showdown_order):
-            self.end_showdown()
-
-        else:
-            self.showdown_page += 1
-    def previous_showdown_page(self):
-        if self.showdown_page > 0:
-            self.showdown_page -= 1
-      
-    def determine_winner(self):
-
-        winner = max(
-            self.active_players, key=lambda player: wh.evaluate_hand(player.hand)
-        )
-        return winner
-
-    def end_showdown(self):
-        self.winner = self.determine_winner()
-        self.award_pots()
-        self.phase = self.WINNER_PHASE
 
     def end_game(self):
         reveal_cards(self)
@@ -362,28 +300,20 @@ class Game:
         current_time = pygame.time.get_ticks()           
 
         if self.dice_rolling:
-            elapsed = current_time - self.dice_roll_start
+            dice.update_dice(self,current_time)
 
-            if current_time - self.dice_animation_last_change >= 80:
-                self.display_die1 = random.randint(1,6)
-                self.display_die2 = random.randint(1,6)
-                self.dice_animation_last_change = current_time
-
-            if elapsed >= self.dice_roll_duration:
-                self.dice_rolling = False
-                self.display_die1 = self.die1
-                self.display_die2 = self.die2
-                self.finish_dice_roll()
-                         
-        if (self.phase in (self.TURN_PHASE, self.self.BETTING_PHASE)
-            and self.current_player.is_ai
-            and self.ai_turn_start is not None
-        ):                        
-            if current_time - self.ai_turn_start >= self.ai_turn_delay:
+        elif self.phase == self.DICE_RESULT_PHASE:
+            dice.update_dice_result(self, current_time)
+                        
+        if self.phase == self.TURN_PHASE and self.current_player.is_ai:
+            if self.ai_turn_start is not None and current_time - self.ai_turn_start >= self.ai_turn_delay:
                 self.ai_turn_start = None
                 self.ai_take_turn()
-            else:
-                pass
+
+        elif self.phase == self.BETTING_PHASE and self.current_player.is_ai:
+            if self.ai_turn_start is not None and current_time - self.ai_turn_start >= self.ai_turn_delay:
+                self.ai_turn_start = None
+                self.current_player.ai.make_betting_move(self)
 
 
     @property

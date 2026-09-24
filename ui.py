@@ -5,8 +5,9 @@ import ui_helpers as uh
 import ui_button as ub
 import ui_cards as uc
 import ui_panels as up
-
-
+import ui_betting as ut
+import ui_raise as ur
+import settings as stt
 
 def draw_background(screen, background):
     screen.blit(background, (0, 0))
@@ -160,12 +161,19 @@ def draw_winner_screen(screen, game, font):
     else:
             uh.draw_text(
             screen,
-            f"Nobody had a Sabbac \n"
-            f"Credits in Sabaac Pot: {game.sabaac_pot} credits",
+            f"Nobody had a Sabbac",
             350,
             325,
             font
         )
+            uh.draw_text(
+            screen,
+            f"Credits in Sabaac Pot: {game.sabaac_pot} credits",
+            350,
+            360,
+            font
+        )
+
 _dice_cache = {}
 def load_dice_image(dice):
     if dice not in _dice_cache:
@@ -178,7 +186,6 @@ def load_dice_image(dice):
         _dice_cache[dice] = image
 
     return _dice_cache[dice]
-
 
 def draw_dice(screen, dice, x, y):
     dice_image = load_dice_image(dice)
@@ -237,12 +244,47 @@ def draw_game(screen, game, font):
         draw_showdown(screen, game, font)
         ub.continue_button.draw(screen, font)
         ub.back_button.draw(screen, font)
+
     elif game.phase == game.WINNER_PHASE:
         game.clickable_cards = []
         draw_winner_screen(screen, game, font)
         ub.new_game_button.draw(screen, font)
         ub.winner_back_button.draw(screen,font)
         ub.winner_quit_button.draw(screen, font)
+
+    elif game.phase == game.BETTING_PHASE:
+        ut.draw_betting_phase(screen, game, font)
+        game.clickable_cards = uc.draw_player_hand(screen, game.current_human_player, font,game.selected_card)
+        positions = up.get_seat_postions(game.players)
+        for player, (x, y) in zip(game.players, positions):
+            up.draw_player_panel(screen, player, x, y, font, game)
+        if game.betting.current_bet == 0:
+            ub.betting_check_button.draw(screen, font)
+        else:
+            ub.betting_call_button.draw(screen, font)
+
+        player = game.current_player
+        current_bet = game.betting.current_bet
+        player_contribution = game.betting.player_bets[player]
+        min_raise = stt.MINIMUM_RAISE
+        new_bet = current_bet + min_raise
+        raise_allowed = game.betting.can_raise(new_bet)
+
+        ub.betting_raise_button.disabled = not raise_allowed
+
+        if raise_allowed:
+            ub.betting_raise_button.base_color = st.LIGHT_BLUE
+            ub.betting_raise_button.text_color = st.BLACK
+
+        else:
+            ub.betting_raise_button.base_color = st.GRAY
+            ub.betting_raise_button.text_color = st.WHITE
+
+        ub.betting_raise_button.draw(screen, font)
+        ub.betting_fold_button.draw(screen, font)
+        if game.raise_panel_open:
+            ur.draw_raise_panel(screen,game, font)
+
     else:
         game.clickable_cards = uc.draw_player_hand(screen, game.current_human_player, font,game.selected_card)
 
@@ -258,8 +300,18 @@ def draw_game(screen, game, font):
 
     ub.menu_button.draw(screen, font)
 
+    if game.phase == game.DICE_RESULT_PHASE:
+        draw_dice(screen, game.display_die1, 400, 200)
+        draw_dice(screen, game.display_die2, 500, 200)
+
+        msg = "Dice Match!" if game.dice_matched else "Dice don't Match!"
+        uh.draw_text(screen, msg, st.WIDTH//2-100, 150, font)
+    
+
     if game.menu_open:
         draw_menu(screen, font)
+
+    
     
 def display_round_info(screen, game, font):
     x,y = st.GAME_INFO_POSITION

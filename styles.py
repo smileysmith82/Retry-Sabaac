@@ -5,6 +5,8 @@ DARK_BLUE = (0, 0, 128)
 BLACK = (0, 0, 0)
 YELLOW = (204, 162, 8)
 RED = (189,17,13)
+GRAY = (104, 106, 108)
+GREEN = (40, 167, 69)
 #Font Information
 FONT_NAME = "ITC Serif Gothic"
 FONT_SMALL = 24

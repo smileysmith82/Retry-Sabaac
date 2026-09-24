@@ -14,7 +14,7 @@ def draw_betting_phase(screen, game, font):
 
     uh.draw_text(screen, f"General Pot: {game.general_pot}", pot_x + 20, pot_y + 15, font)
     uh.draw_text(screen, f"Current Bet: {game.betting.current_bet}", pot_x + 20, pot_y + 40, font)
-    uh.draw_text(screen, f"Sabacc Pot: {game.sabaac_pot}", pot_x + 20, pot_y + 65, font)
+    uh.draw_text(screen, f"Number of Raises: {game.betting.number_of_raises}", pot_x + 20, pot_y + 65, font)
 
     if game.betting.current_bet == 0:
         ub.betting_check_button.draw(screen, font)
