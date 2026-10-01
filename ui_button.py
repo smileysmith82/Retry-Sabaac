@@ -267,11 +267,10 @@ def handle_button_clicks(event, game):
             return
 
         if settings_button.is_clicked(event):
-            print("Settings Closed")
-            return
+            return "settings"
 
         if quit_button.is_clicked(event):
-            game.quit_game()
+            return game.quit_game()
 
         return
 
@@ -370,8 +369,8 @@ def handle_button_clicks(event, game):
             game.start_new_game()
             return
         if winner_quit_button.is_clicked(event):
-            game.quit_game()
-            return
+            return game.quit_game()
+            
         if winner_back_button.is_clicked(event):
             game.phase = game.SHOWDOWN_PHASE
             return

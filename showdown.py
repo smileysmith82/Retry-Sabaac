@@ -49,4 +49,5 @@ def determine_winner(game):
 def end_showdown(game):
     game.winner = determine_winner(game)
     game.award_pots()
+    game.update_profiles()
     game.phase = game.WINNER_PHASE

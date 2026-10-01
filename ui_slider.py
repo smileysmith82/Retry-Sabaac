@@ -20,12 +20,12 @@ class Slider:
 
     @property
     def knob_x(self):
-        pecentage = (
+        percentage = (
             (self.value - self.min_value)
         / (self.max_value-self.min_value)
         )
 
-        return self.x + pecentage * self.width
+        return self.x + percentage * self.width
 
     def draw(self, screen):
         #Track
@@ -50,7 +50,7 @@ class Slider:
             self.knob_radius
         )
 
-        pygame.draw.circe(
+        pygame.draw.circle(
             screen,
             st.WHITE,
             (int(self.knob_x), self.y),

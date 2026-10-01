@@ -10,4 +10,6 @@ class Profile:
         self.wins = 0
         self.losses = 0
         self.settings = {}
+
+        self.profile_picture = None
         

@@ -12,7 +12,11 @@ SHOWDOWN_PLAYERS_PER_PAGE = 4
 NUMBER_OF_RAISES = 2
 
 MINIMUM_RAISE = 2
-    
+
+DEFAULT_VOLUME = 75
+DEFAULT_AI_TURN_SPEED = 750
+DEFAULT_FULLSCREEN = False
+
 AI_NAMES = [
     {"full": "Lando Calrissian", "short": "Lando"},
     {"full": "Hondo Onaka", "short": "Hondo"},

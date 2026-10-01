@@ -11,7 +11,7 @@ import winning_hands as wh
 import betting as bet
 import dice
 import showdown as show
-
+from profile_loader import save_profile
 
 
 class Game:
@@ -23,14 +23,15 @@ class Game:
     SHOWDOWN_PHASE = "SHOWDOWN"
     WINNER_PHASE = "WINNER"
     GAME_OVER_PHASE = "GAME OVER"
-    def __init__(self, num_ai_players=stt.NUMBER_OF_AI_PLAYERS, num_human_players=stt.NUMBER_OF_HUMAN_PLAYERS):
+    def __init__(self,profile,  num_ai_players=stt.NUMBER_OF_AI_PLAYERS, num_human_players=stt.NUMBER_OF_HUMAN_PLAYERS):
         #setup core game State
-        self.num_players = num_ai_players + num_human_players
+        self.num_players = (num_ai_players + num_human_players)
         self.num_human_players = num_human_players
 
         self.players = []
         self.human_players = []
         self.current_human_index = 0
+        self.profile = profile
 
         self.ai_names = stt.AI_NAMES.copy()
 
@@ -86,8 +87,7 @@ class Game:
     def create_players(self):
         for i in range(self.num_players):
             if i < self.num_human_players:
-                profile = Profile(name=f"Player {i+1}")
-                player = Player(profile, is_ai=False)
+                player = Player(self.profile, is_ai=False)
                 self.human_players.append(player)
             else:
                 ai_name = self.ai_names.pop()
@@ -256,8 +256,8 @@ class Game:
         self.menu_open = False
 
     def quit_game(self):
-        pygame.quit()
-        raise SystemExit
+        self.save_profiles()
+        return "menu"
 
     def end_game(self):
         reveal_cards(self)
@@ -294,6 +294,25 @@ class Game:
         player = self.current_player
         player.ai.make_move(self)
 
+    def save_profiles(self):
+        for player in self.players:
+            if not player.is_ai:
+                player.profile.credits = player.credits
+                save_profile(player.profile)
+
+    def update_profiles(self):
+        for player in self.players:
+            if not player.is_ai:
+                player.profile.credits = player.credits
+
+                if player == self.winner:
+                    player.profile.wins +=1
+
+                else:
+                    player.profile.losses +=1
+
+                save_profile(player.profile)
+    
     def update(self):
         if self.menu_open:
             return
