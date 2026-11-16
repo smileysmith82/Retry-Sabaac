@@ -1,0 +1,19 @@
+How to structure ai_memory:
+
+
+Whenever an ai takes an action, they will need to update their memory.
+
+If the ai draws, they just need to look over their hand to see which card is new
+The opponents would note 1 more unknown card in the opponents hand
+
+
+if a player swaps with the discard pile, their hand would change in that one card is no longer part of their hand and they have 1 new card in hand
+The ai would see what card was taken from the discard and what card was added to the discard. (If source == "Discard" update should be the same for every hard ai)
+
+If source == "Draw" then the player updates their hand to see the new card and remove the old card. The odl card is now the top of the discard
+The ai would see the new top of discard and note that the ai now has 1 more unknown card
+
+When a player folds, we can get rid of their memory
+The other ai update their memory with just the discard pile update
+
+Similarly when a spike happens, a player knows that their hand is now in the discard pile. They don't know what each opponent has anymore so their memory except for the discard pile and their own hand resets. All they know is the number of cards each opponent has

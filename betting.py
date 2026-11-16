@@ -93,7 +93,6 @@ class Betting:
         if new_bet <= self.current_bet:
             return False
         
-
         amount_to_pay = new_bet - self.player_bets[player]
 
         return player.credits >= amount_to_pay
@@ -160,9 +159,13 @@ class Betting:
         player.folded = True
         folded_cards = player.hand[:]
         random.shuffle(folded_cards)
+
         self.game.discard_pile.extend(folded_cards)
         player.hand.clear()
+        visible_card = self.game.discard_pile[-1] if folded_cards else None
 
+        from player_actions import notify_hard_ai_fold
+        notify_hard_ai_fold(self.game, player, folded_cards, visible_card)
         self.players_acted.add(player) 
         self.next_betting_turn()
 

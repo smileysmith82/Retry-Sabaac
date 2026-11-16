@@ -336,12 +336,7 @@ def handle_button_clicks(event, game):
             
 
             final_amount = current_bet + game.pending_raise_amount
-
-            print("Attempting raise to: ", final_amount)
-
             success = game.player_raise(final_amount)
-            print("Raise success: ", success)
-
             
             if success:
                 game.betting.next_betting_turn()

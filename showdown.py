@@ -2,7 +2,6 @@ import winning_hands as wh
 import settings as stt
 
 
-
 def start_showdown(game):
     active_indexes = [
         i for i, player in enumerate(game.players)

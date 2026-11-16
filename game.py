@@ -1,8 +1,7 @@
 from profile import Profile
 from deck import Deck
 from player import Player
-from player_actions import reveal_cards, stand
-from ai_logic import AIPlayer
+from player_actions import reveal_cards, stand, notify_hard_ai_spike_start, notify_hard_ai_spike_end
 import settings as stt
 import random
 import pygame
@@ -11,7 +10,11 @@ import winning_hands as wh
 import betting as bet
 import dice
 import showdown as show
+from   ai_easy import EasyAI
+from   ai_medium import MediumAI
+from   ai_hard import HardAI
 from profile_loader import save_profile
+
 
 
 class Game:
@@ -41,7 +44,7 @@ class Game:
 
         self.awaiting_player_action = False
         self.game_over = False
-        self.ai_turn_delay = 700
+        self.ai_turn_delay = profile.settings.get("ai_turn_speed", stt.DEFAULT_AI_TURN_SPEED)
         self.ai_turn_start = None
 
         self.dealer_index = random.randrange(self.num_players)
@@ -51,6 +54,7 @@ class Game:
         self.showdown_page = 0
 
         self.discard_pile = []
+        self.discard_was_shuffled = False
 
         self.rounds_played = 0
         self.rounds_per_game = 3
@@ -71,7 +75,7 @@ class Game:
 
         self.dice_rolling = False
         self.dice_roll_start = None
-        self.dice_roll_duration = 1000
+        self.dice_roll_duration = 750
 
         self.display_die1 = None
         self.display_die2 = None
@@ -84,6 +88,16 @@ class Game:
         #Full Initial Setup (Same as Dealer Reset)
         self.start_new_game()
 
+    def create_ai(self, ai_name, difficulty):
+        personalities = stt.AI_PERSONALITIES[ai_name["short"]]
+
+        if difficulty == "Easy":
+            return EasyAI(personalities)
+        if difficulty == "Medium":
+            return MediumAI(personalities)
+        if difficulty == "Hard":
+            return HardAI(personalities)
+        
     def create_players(self):
         for i in range(self.num_players):
             if i < self.num_human_players:
@@ -91,13 +105,15 @@ class Game:
                 self.human_players.append(player)
             else:
                 ai_name = self.ai_names.pop()
-                if stt.USE_AI_FULL_NAMES:
+                if self.profile.settings.get("use_ai_full_names", stt.DEFAULT_USE_AI_FULL_NAMES):
                     name = ai_name["full"]
                 else:
                     name = ai_name["short"]
+
+                difficulty = self.get_ai_difficulty(ai_name)
                 profile = Profile(name=name)
                 player = Player(profile, is_ai=True)
-                player.ai = AIPlayer()
+                player.ai = self.create_ai(ai_name, difficulty)
             self.players.append(player)
 
     def start_new_game(self):
@@ -108,6 +124,7 @@ class Game:
         self.rounds_played = 0
         
         self.discard_pile = []
+        self.discard_was_shuffled = False
         top_card = self.deck.shuffled_deck.pop()
         self.discard_pile.append(top_card)
 
@@ -130,6 +147,17 @@ class Game:
         
         self.change_dealer()
         self.deal_new_hands(hand_size=2)
+        for player in self.players:
+            if player.is_ai and isinstance(player.ai, HardAI):
+                memory = player.ai.memory
+
+                all_cards = (self.deck.shuffled_deck + self.discard_pile + [card for player in self.players for card in player.hand])
+
+                memory.initialize_cards(all_cards)
+                memory.initialize_opponent_hand_sizes(self.players, player)
+                memory.remember_own_hand(player)
+                memory.remember_top_discard(self.discard_pile[-1])
+
         self.phase = self.TURN_PHASE
         self.awaiting_player_action = False
 
@@ -153,6 +181,14 @@ class Game:
                 self.refill_draw_pile()
                 player.hand.append(self.deck.shuffled_deck.pop())
 
+    def get_ai_difficulty(self, ai_name):
+        setting = self.profile.settings.get("ai_difficulty", stt.DEFAULT_AI_DIFFICULTY)
+        if setting == "Personalities":
+            return ai_name["difficulty"]
+        if setting == "Random":
+            return random.choice(["Easy", "Medium", "Hard"])
+        return setting
+    
     @property
     def current_player(self):
         return self.players[self.current_index]
@@ -226,6 +262,8 @@ class Game:
         dice.start_dice_roll(self)   
 
     def reset_hands(self):
+        self.discard_was_shuffled = False
+        notify_hard_ai_spike_start(self)
         for player in self.players:
             hand_size = len(player.hand)
 
@@ -240,14 +278,25 @@ class Game:
 
         self.discard_pile.append(top_card)
 
+        notify_hard_ai_spike_end(self)
+
     def refill_draw_pile(self):
         if len(self.deck.shuffled_deck) == 0:
+            self.discard_was_shuffled = True
+
+            for player in self.players:
+                if player.is_ai and isinstance(player.ai, HardAI):
+                    player.ai.memory.forget_discard_pile()
+
             self.deck.shuffled_deck.extend(self.discard_pile)
             random.shuffle(self.deck.shuffled_deck)
             
             top_card = self.deck.shuffled_deck.pop()
 
             self.discard_pile.append(top_card)
+            for player in self.players:
+                if player.is_ai and isinstance(player.ai, HardAI):
+                    player.ai.memory.remember_top_discard(top_card)
 
     def open_menu(self):
         self.menu_open = True
@@ -261,6 +310,7 @@ class Game:
 
     def end_game(self):
         reveal_cards(self)
+
         self.game_over = True
         self.phase = self.GAME_OVER_PHASE
 
@@ -325,15 +375,19 @@ class Game:
             dice.update_dice_result(self, current_time)
                         
         if self.phase == self.TURN_PHASE and self.current_player.is_ai:
-            if self.ai_turn_start is not None and current_time - self.ai_turn_start >= self.ai_turn_delay:
-                self.ai_turn_start = None
-                self.ai_take_turn()
+            if self.ai_turn_start is not None: 
+                self.ai_turn_delay = self.profile.settings.get("ai_turn_speed", stt.DEFAULT_AI_TURN_SPEED)
+                if current_time - self.ai_turn_start >= self.ai_turn_delay:
+                    self.ai_turn_start = None
+                    self.ai_take_turn()
 
         elif self.phase == self.BETTING_PHASE and self.current_player.is_ai:
-            if self.ai_turn_start is not None and current_time - self.ai_turn_start >= self.ai_turn_delay:
-                self.ai_turn_start = None
-                self.current_player.ai.make_betting_move(self)
-
+            if self.ai_turn_start is not None: 
+                self.ai_turn_delay = self.profile.settings.get("ai_turn_speed", stt.DEFAULT_AI_TURN_SPEED)
+                if current_time - self.ai_turn_start >= self.ai_turn_delay:
+                    self.ai_turn_start = None
+                    self.current_player.ai.make_betting_move(self)
+            
 
     @property
     def dealer(self):

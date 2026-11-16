@@ -1,0 +1,14 @@
+{
+    "name": "Temporary",
+    "credits": 568,
+    "wins": 6,
+    "losses": 26,
+    "settings": {
+        "volume": 25,
+        "ai_turn_speed": 0,
+        "ai_difficulty": "Hard",
+        "use_ai_full_names": false
+    },
+    "profile_picture": null,
+    "signature": "e24074cd65c0c726a26dd975b7f5cdc852907708e5e11c37dbc8f796f508cf5d"
+}

@@ -1,9 +1,14 @@
 {
     "name": "Jared",
-    "credits": 496,
-    "wins": 0,
-    "losses": 0,
-    "settings": {},
+    "credits": 873,
+    "wins": 3,
+    "losses": 5,
+    "settings": {
+        "volume": 0,
+        "ai_turn_speed": 200,
+        "ai_difficulty": "Medium",
+        "use_ai_full_names": true
+    },
     "profile_picture": null,
-    "signature": "ef064dee23002c6999a1bd73604f68c50668b9cf3fab89fef9c81654331bd49a"
+    "signature": "8743ad7562c1a7509b2144ad35fb30fc9def8730070bd1ef4da7b1f6f84756dd"
 }

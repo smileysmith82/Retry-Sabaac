@@ -1,0 +1,563 @@
+The ratings I gave are ultimately design judgments, not canon measurements. Here's the reasoning behind them.
+
+What the three stats mean
+Aggression
+How willing they are to put more credits into the pot.
+
+High aggression:
+
+Raises more frequently.
+
+Applies pressure.
+
+Is less satisfied with checking/calling.
+
+Is more likely to continue betting when they have a strong hand.
+
+Low aggression:
+
+Checks more.
+
+Calls rather than raises.
+
+Avoids unnecessarily growing the pot.
+
+Risk
+How willing they are to make a dangerous decision.
+
+This is different from aggression.
+
+Someone can be aggressive but relatively calculated.
+
+For example, Thrawn might make a large raise with a strong hand, but he's unlikely to throw his entire stack away on a marginal hand.
+
+Someone like Hondo might happily do both.
+
+Bluff
+How willing they are to represent strength when they don't actually have it.
+
+High bluff:
+
+Raises with mediocre/weak hands.
+
+Calls bets that don't make much sense mathematically.
+
+Occasionally makes intentionally deceptive plays.
+
+Low bluff:
+
+Mostly bets when they actually like their hand.
+
+Doesn't try elaborate deception.
+
+Is easier to read.
+
+That distinction gives you some really interesting combinations.
+
+Ahsoka
+Aggression 0.55
+Risk       0.45
+Bluff      0.35
+
+I see Ahsoka as balanced and disciplined.
+
+She's willing to act, but she's not looking for unnecessary confrontation. She tends toward measured decisions rather than gambling.
+
+So she's:
+
+"I have a good hand, I'll bet. I don't need to prove anything."
+
+That's why her aggression is slightly above average but her risk and bluff are lower.
+
+Beckett
+Aggression 0.80
+Risk       0.75
+Bluff      0.85
+
+Beckett is one of the strongest fits for a Sabacc personality.
+
+He's a professional gambler / con artist / opportunist.
+
+His big trait is deception.
+
+So:
+
+High aggression → willing to pressure opponents.
+
+High risk → willing to take chances.
+
+Very high bluff → deception is central to his play.
+
+He should be one of those AIs where the player thinks:
+
+"I have no idea if Beckett actually has anything."
+
+Bix
+Aggression 0.35
+Risk       0.30
+Bluff      0.25
+
+Bix is intended to be relatively cautious.
+
+She's not the character I'd associate with reckless gambling or intimidation.
+
+So she's more:
+
+"Make the sensible play and survive."
+
+This also works nicely because she's Easy difficulty. She's not necessarily bad at Sabacc; she's simply conservative.
+
+Bo-Katan
+Aggression 0.80
+Risk       0.75
+Bluff      0.45
+
+Bo-Katan is aggressive, decisive, and willing to commit.
+
+But I didn't give her an extremely high bluff because I don't think deception is her defining characteristic.
+
+Her approach is more:
+
+"I know what I want. I'm taking it."
+
+High aggression + high risk + moderate bluff.
+
+Boba Fett
+Aggression 0.75
+Risk       0.70
+Bluff      0.40
+
+Boba is dangerous, but he's also professional.
+
+That's why I didn't make his risk/bluff values absurdly high.
+
+He should feel like someone who is willing to put pressure on you, but isn't randomly gambling.
+
+His personality should feel like:
+
+"I know what I'm doing. Don't mistake patience for weakness."
+
+C-3PO
+Aggression 0.15
+Risk       0.10
+Bluff      0.05
+
+This one is mostly comedic.
+
+C-3PO should be extremely cautious.
+
+He'd probably be the AI constantly thinking:
+
+"Oh dear. This seems like an extraordinarily unwise wager."
+
+And then checking.
+
+He's a great contrast to Hondo.
+
+Cassian
+Aggression 0.65
+Risk       0.65
+Bluff      0.55
+
+Cassian is interesting because he's calculated but willing to take risks when the mission demands it.
+
+So I gave him fairly balanced numbers.
+
+He's not a reckless gambler, but he's willing to make uncomfortable plays if there's a reason.
+
+Chewbacca
+Aggression 0.65
+Risk       0.80
+Bluff      0.20
+
+This is one of my favorite combinations.
+
+High risk + low bluff.
+
+Chewie isn't necessarily trying to manipulate you.
+
+He's just willing to go for it.
+
+So he might make a huge wager with a questionable hand, but he's not doing some elaborate psychological trick.
+
+That creates a very different opponent from Hondo:
+
+Hondo:
+"I might be bluffing."
+
+Chewie:
+"I might have absolutely nothing. LET'S GO."
+
+😂
+
+Dryden Vos
+Aggression 0.85
+Risk       0.70
+Bluff      0.80
+
+Dryden is a manipulator and crime boss.
+
+He should be comfortable using intimidation and deception.
+
+High aggression + high bluff makes him dangerous in betting.
+
+But I kept risk below Hondo because Dryden should feel controlled, not chaotic.
+
+Enfys Nest
+Aggression 0.80
+Risk       0.75
+Bluff      0.55
+
+Enfys is bold and confrontational.
+
+She should be willing to push hard, but she's not necessarily a classic con artist.
+
+So again:
+
+high aggression, high commitment, moderate deception.
+
+Ezra
+Aggression 0.45
+Risk       0.65
+Bluff      0.40
+
+Ezra is interesting because he's somewhat unpredictable.
+
+He's not naturally an aggressive gambler, but he's willing to take chances.
+
+So his risk is higher than his aggression.
+
+That means you could get situations where:
+
+"This is probably a terrible idea... let's do it."
+
+Which feels appropriate for younger Ezra.
+
+Fives
+Aggression 0.50
+Risk       0.45
+Bluff      0.25
+
+Fives feels disciplined and methodical.
+
+He's a soldier, so I see him as someone who follows a plan rather than constantly trying to deceive opponents.
+
+Pretty middle-of-the-road, but with low bluff.
+
+Gar Saxon
+Aggression 0.75
+Risk       0.70
+Bluff      0.30
+
+Gar is more of a direct threat than a subtle manipulator.
+
+High aggression.
+
+High willingness to commit.
+
+Low bluff.
+
+His style should feel straightforward:
+
+"I'm betting because I think I'm going to win."
+
+Han Solo
+Aggression 0.85
+Risk       0.85
+Bluff      0.90
+
+Han is probably the most obvious high-bluff character.
+
+His whole personality lends itself to:
+
+"I know exactly what I'm doing."
+
+...even when he absolutely does not.
+
+😂
+
+The important thing is that Han's Hard difficulty doesn't mean he's always making mathematically optimal decisions.
+
+Hard Han understands the game extremely well.
+
+But his personality may cause him to choose a risky/bluffy line anyway.
+
+That's what makes personality useful.
+
+Hondo
+Aggression 0.90
+Risk       0.95
+Bluff      0.95
+
+Hondo is basically the perfect Sabacc chaos engine.
+
+He's:
+
+opportunistic
+
+deceptive
+
+greedy
+
+willing to take chances
+
+extremely confident
+
+So he's basically your:
+
+"What the hell is Hondo doing?" AI.
+
+He should probably generate some of the funniest games.
+
+Jabba
+Aggression 0.75
+Risk       0.65
+Bluff      0.70
+
+Jabba is powerful and manipulative.
+
+But I don't see him as someone who personally needs to take insane risks.
+
+He's more interested in controlling the situation.
+
+So high aggression/bluff, moderate risk.
+
+Jango
+Aggression 0.70
+Risk       0.60
+Bluff      0.30
+
+Like Boba, Jango is a professional.
+
+He's willing to act decisively, but he isn't a theatrical bluffer.
+
+He should feel efficient.
+
+Kanan
+Aggression 0.50
+Risk       0.45
+Bluff      0.25
+
+Kanan is fairly measured.
+
+He's not particularly interested in manipulation or unnecessary risk.
+
+He's more likely to wait for the right moment.
+
+Lando
+Aggression 0.75
+Risk       0.70
+Bluff      0.90
+
+Lando is another obvious high-bluff character.
+
+He's charismatic, confident, and comfortable with games of chance.
+
+But unlike Hondo, I see Lando as more controlled.
+
+So:
+
+Lando:
+High aggression
+High risk
+Extremely high bluff
+
+but not quite the same chaotic level as Hondo.
+
+Leia
+Aggression 0.55
+Risk       0.35
+Bluff      0.45
+
+Leia is interesting because she is not timid, despite having relatively low risk.
+
+She can absolutely take control of a situation.
+
+So I gave her moderate aggression but relatively low risk.
+
+She doesn't need to gamble recklessly to get what she wants.
+
+Luke
+Aggression 0.40
+Risk       0.35
+Bluff      0.20
+
+Luke is probably one of your more straightforward players.
+
+He isn't naturally deceptive or aggressive.
+
+I'd expect him to play honestly and cautiously.
+
+Which also makes him a good Easy opponent.
+
+Maz
+Aggression 0.65
+Risk       0.60
+Bluff      0.65
+
+Maz has decades of experience reading people.
+
+That's why I gave her a relatively high bluff rating.
+
+But she's not reckless.
+
+She should feel like someone who understands people, rather than someone who just throws chips around.
+
+Palpatine
+Aggression 0.85
+Risk       0.60
+Bluff      0.85
+
+Palpatine is a really interesting combination.
+
+Very aggressive.
+
+Very deceptive.
+
+But not particularly reckless.
+
+That's intentional.
+
+He doesn't need to gamble recklessly because he'd rather manipulate the situation so that the outcome is already in his favor.
+
+His personality is:
+
+"I am going to make you think this was your decision."
+
+That's very different from Hondo's chaos.
+
+Qi'ra
+Aggression 0.75
+Risk       0.70
+Bluff      0.85
+
+Qi'ra gets a high bluff rating because deception and maintaining different identities are central to her character.
+
+She's willing to take risks, but she's is partly because I think it would be hilarious also calculating.
+
+So she's another character who could be very difficult to read.
+
+R2-D2
+Aggression 0.30
+Risk       0.25
+Bluff      0.10
+
+This is partly because I think it would be hilarious.
+
+R2 doesn't need to be a sophisticated bluffer.
+
+He should mostly just quietly make decisions.
+
+You could potentially make him surprisingly good at risk assessment while still being passive.
+
+Rex
+Aggression 0.60
+Risk       0.45
+Bluff      0.20
+
+Rex is disciplined.
+
+He's willing to act, but he's not someone I'd associate strongly with bluffing.
+
+He should feel like a competent, straightforward player.
+
+Sabine
+Aggression 0.75
+Risk       0.80
+Bluff      0.55
+
+Sabine gets high risk because she's adventurous, creative, and willing to improvise.
+
+And I think Sabacc fits her personality particularly well.
+
+She might see a strange opportunity and think:
+
+"This could work."
+
+And then go for it.
+
+Saw
+Aggression 0.95
+Risk       0.95
+Bluff      0.45
+
+Saw is basically your maximum-pressure opponent.
+
+The interesting thing is that I didn't give him maximum bluff.
+
+He's aggressive because he's committed.
+
+His strategy isn't necessarily:
+
+"How can I fool you?"
+
+It's:
+
+"How far are you willing to go?"
+
+So he's almost the opposite of Lando.
+
+Thrawn
+Aggression 0.60
+Risk       0.25
+Bluff      0.70
+
+This is probably the most important personality combination to preserve.
+
+Thrawn should be extremely intelligent but conservative.
+
+That's why his difficulty is Hard but his risk is very low.
+
+He's not going to make stupid bets.
+
+But his bluff rating is relatively high because he understands opponents and can manipulate their expectations.
+
+So:
+
+Hard AI
++ Low risk
++ High strategic deception
+
+could make Thrawn one of the hardest characters to beat.
+
+Vader
+Aggression 0.90
+Risk       0.75
+Bluff      0.35
+
+Vader is overwhelmingly aggressive, but he's not a con artist.
+
+His presence alone is pressure.
+
+So I'd make him:
+
+Very aggressive + willing to commit + relatively straightforward.
+
+The player should frequently think:
+
+"Oh no. Vader just raised."
+
+rather than:
+
+"I wonder what elaborate bluff Vader is running."
+
+The really important part
+These numbers give you some distinct personality archetypes rather than just 30 slightly different AIs.
+
+For example:
+
+Character	Aggression	Risk	Bluff	Personality
+C-3PO	0.15	0.10	0.05	Extremely cautious
+Thrawn	0.60	0.25	0.70	Calculating
+Chewbacca	0.65	0.80	0.20	Aggressive risk-taker
+Lando	0.75	0.70	0.90	Charismatic gambler
+Han	0.85	0.85	0.90	Reckless gambler
+Palpatine	0.85	0.60	0.85	Manipulator
+Hondo	0.90	0.95	0.95	Chaotic gambler
+Saw	0.95	0.95	0.45	Relentless
+Vader	0.90	0.75	0.35	Intimidating
+Leia	0.55	0.35	0.45	Controlled
+
+And that's exactly what I want the personality system to accomplish.
+
+The next step I'd recommend is not adding more personality stats yet. We should take these three and figure out exactly how aggression, risk, and bluff modify your existing make_betting_move() without turning it into a giant mess of if statements.
