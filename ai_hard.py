@@ -166,6 +166,10 @@ class HardAI(ab.AIPlayer):
             best_swap_probability = swap_probabilities[best_swap_index]["improvement"]
     
         required_probability = 1.0 - risk
+        best_improvement_probability = draw_probability
+
+        if self.can_swap(player):
+            best_improvement_probability = max(best_improvement_probability, best_swap_probability)
 
         if best_swap_score > draw_score:
             if (best_swap_probability >= required_probability and self.can_swap(player)):
@@ -187,7 +191,7 @@ class HardAI(ab.AIPlayer):
         hand_strength = self.get_hand_strength(hand)
 
         
-        required_hand_strength = .1 + ((1.0 - aggression) * 0.30 - risk * 0.05)
+        required_hand_strength = .1 + (aggression * 0.3)
         required_hand_strength = max(0.05, min(0.40, required_hand_strength))
         
 
@@ -195,7 +199,11 @@ class HardAI(ab.AIPlayer):
             stand(game)
             return
 
-        fold(game)
+
+        if best_improvement_probability < required_probability:
+            fold(game)
+            return
+        stand(game)
         return
 
 
@@ -205,7 +213,7 @@ class HardAI(ab.AIPlayer):
 
         if category == wh.NULRHEK:
             total = abs(sum(card.rank for card in hand))
-            return 0.05 / (1 + total)
+            return 1.0 / (1 + total)
 
         return category / wh.PURE_SABAAC
         
